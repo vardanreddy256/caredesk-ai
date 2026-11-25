@@ -1,3 +1,5 @@
+import time, hmac, hashlib, base64
+from aiortc import RTCIceServer
 import os, asyncio, uuid
 from dotenv import load_dotenv
 load_dotenv()
@@ -14,10 +16,45 @@ def dashboard():
     a=db.appointments()
     for x in a: x['phone']='••••••'+x['phone'][-4:]
     return {'doctors':doctors,'slots':db.availability(),'appointments':a}
+
+def turn_credentials():
+    secret = os.getenv("TURN_SECRET")
+    url = os.getenv("TURN_URL")
+
+    if not secret or not url:
+        return []
+
+    username = str(int(time.time()) + 3600) + ":caredesk"
+    credential = base64.b64encode(
+        hmac.new(
+            secret.encode(),
+            username.encode(),
+            hashlib.sha1
+        ).digest()
+    ).decode()
+
+    return [{
+        "urls": url,
+        "username": username,
+        "credential": credential
+    }]
+
+@app.get("/api/ice-config")
+def ice_config():
+    return {"iceServers": turn_credentials()}
+
+def backend_ice_servers():
+    servers = turn_credentials()
+    backend_url = os.getenv("TURN_BACKEND_URL")
+    if backend_url:
+        for server in servers:
+            server["urls"] = backend_url
+    return [RTCIceServer(**server) for server in servers]
+
 @app.post('/api/offer')
 async def offer(data:dict):
     if not all(os.getenv(k) for k in ('ELEVENLABS_API_KEY','GOOGLE_API_KEY')): raise HTTPException(503,'Configure API keys in backend/.env')
-    connection=SmallWebRTCConnection(ice_servers=[]); await connection.initialize(sdp=data['sdp'],type=data['type']); sid=uuid.uuid4().hex; events=[]
+    connection=SmallWebRTCConnection(ice_servers=backend_ice_servers()); await connection.initialize(sdp=data['sdp'],type=data['type']); sid=uuid.uuid4().hex; events=[]
     async def worker():
         try: await run(connection,events)
         except Exception as e: events.append({'role':'error','text':str(e)})

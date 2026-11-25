@@ -36,3 +36,13 @@ bot_*backup.py
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Deployment secrets and backups
+backups/
+*.env
+*.env.*
+!.env.example
+*.secret
+*.pem
+*.key
+*.pre-turn

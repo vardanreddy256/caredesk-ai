@@ -1,0 +1,17 @@
+.env
+.env.*
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.db
+*.db-*
+*.sqlite*
+bot_*backup.py
+*.bak
+*.swp
+*.mp3
+*.wav
+*.log
+.git/
+.pytest_cache/

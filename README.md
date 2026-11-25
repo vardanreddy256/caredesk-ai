@@ -196,3 +196,21 @@ Remote deployment may require STUN/TURN configuration.
 - FastAPI: https://fastapi.tiangolo.com/
 - Google AI Studio: https://aistudio.google.com/
 
+
+## Cloud Deployment
+
+CareDesk AI is deployed on AWS EC2 (Mumbai region).
+
+- Dockerized React frontend and FastAPI backend
+- AWS ECR for container image storage
+- Coturn for WebRTC audio relay
+- DuckDNS for domain management
+- Caddy reverse proxy with Let's Encrypt HTTPS
+- Password-protected demo access
+- Persistent SQLite database
+- Tested two-way AI voice communication over HTTPS
+
+Live Demo: https://caredesk-ai.duckdns.org
+
+The application is a functional MVP intended for demonstration
+using dummy patient information.
