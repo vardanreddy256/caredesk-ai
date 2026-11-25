@@ -1,0 +1,5 @@
+pipecat-ai[google,groq,elevenlabs,webrtc,silero]==0.0.108
+fastapi
+uvicorn[standard]
+python-dotenv
+tzdata
